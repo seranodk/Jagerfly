@@ -1,0 +1,26 @@
+{
+  "name": "Jagerfly",
+  "short_name": "Jagerfly",
+  "description": "F-35 skydespil til mobil og browser",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#0c1520",
+  "theme_color": "#0c1520",
+  "lang": "da",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
