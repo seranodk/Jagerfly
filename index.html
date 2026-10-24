@@ -400,7 +400,7 @@ function reset(){
   L=LEVELS[lvl]; spd=SPEED; banner=3; $('#bossName').textContent=L.bossName; $('#bossbar').hidden=true;
   PL=PLANES[plane];
   D=Object.assign({},DIFF[diff]);
-  D.rate*=Math.max(.5,1-lvl*.035); D.eb*=1+lvl*.025; D.boss=Math.round(D.boss*(1+lvl*.22)); D.hpMul=1+lvl*.12;
+  D.rate*=Math.max(.5,1-lvl*.035); D.eb*=1+lvl*.025; D.boss=Math.round(D.boss*(1+lvl*.3)); D.hpMul=1+lvl*.17;
   if(lvl>=5)D.jetShoot=true;
   D.hearts=PL.hearts+D.extraH;
   t=0; dist=0; score=0; kills=0; msFired=0; hearts=D.hearts; msLeft=PL.ms+D.extraMs; msCd=0;
