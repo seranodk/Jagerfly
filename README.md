@@ -1,11 +1,21 @@
 # Jagerfly
 
-Et top-down skydespil til mobil og browser, hvor du flyver et F-35 og skyder med maskingevær og missiler. Lavet, så en 6-årig kan spille det. v1.2.
+Et top-down skydespil til mobil og browser, hvor du flyver jagerfly og skyder med maskingevær og missiler. Du starter med et F-16 og låser bedre fly op undervejs. Lavet, så en 6-årig kan spille det. v1.3.
 
 **Spil:** åbn `index.html`, eller slå GitHub Pages til (Settings → Pages → Branch `main`, mappe `/root`). På mobilen kan siden føjes til hjemmeskærmen og kører så i fuld skærm som en app.
 
 ## ## Indhold
-- 14 baner, som alle kan vælges fra start (klarede baner får en stjerne). Hver bane har sit eget terræn og sin egen boss:
+- 5 fly i hangaren, hvert bedre end det forrige:
+
+| Fly | Låses op | Kanon | Missiler | Hjerter |
+|---|---|---|---|---|
+| F-16 Falcon | fra start | 2 skud | 4 | 3 |
+| F/A-18 Hornet | klar bane 3 | 2 skud, hurtigere | 6 | 4 |
+| JAS 39 Gripen | klar bane 6 | 3 skud i vifte | 6 (stærkere) | 4 |
+| F-35 Lightning II | klar bane 9 | 3 skud, lynhurtig | 8 (stærkere) | 5 |
+| F-22 Raptor | klar bane 12 | 5 skud i vifte | 10 (stærkest) | 6 |
+
+- 14 baner, der låses op én ad gangen og bliver gradvist sværere (flere og hurtigere kugler, fjender og bosser tåler mere). De sidste baner kræver de bedre fly. Menuen viser det anbefalede fly for hver bane. Hver bane har sit eget terræn og sin egen boss:
 
 | # | Bane | Terræn | Boss |
 |---|---|---|---|
@@ -27,7 +37,7 @@ Et top-down skydespil til mobil og browser, hvor du flyver et F-35 og skyder med
 - Fjender: jagerfly i formation og zigzag, helikoptere, kanonbåde og kampvogne; banerne bliver lidt sværere for hver
 - Maskingeværet skyder, så længe fingeren er på skærmen. Missiler er ekstra: den gule knap sender to målsøgende missiler af sted
 - Missiler fyldes op med missilkasser, som fjender taber, og der kommer altid et hjerte og en missilkasse lige før bossen
-- Sværhedsgrad: Let (5 hjerter, 8 missiler, langsomme kugler) eller Normal (3 hjerter, 6 missiler)
+- Sværhedsgrad: Let (+2 hjerter, +2 missiler, langsommere kugler) eller Normal (som flyet er)
 - Lyd kan slås fra
 
 ## Styring

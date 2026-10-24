@@ -8,12 +8,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Jagerfly">
-<meta name="description" content="Jagerfly – flyv et F-35 og skyd med maskingevær eller missiler. Til mobil og browser (v1.2)">
+<meta name="description" content="Jagerfly – flyv et F-35 og skyd med maskingevær eller missiler. Til mobil og browser (v1.3)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>:root{padding:0}body{margin:0}[hidden]{display:none!important}</style>
-<title>Jagerfly v1.2</title>
+<title>Jagerfly v1.3</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,6 +116,33 @@ h2{font-size:40px}
 .lv span{padding:0 10px;font-size:12px;color:var(--dim);line-height:1.2}
 .lv em{font-style:normal;color:var(--amber);font-weight:800}
 .lv.on{border-color:var(--amber);background:#2a2412}
+.mplane{display:flex;align-items:center;gap:12px;border:2px solid var(--line);background:var(--steel);border-radius:12px;padding:6px 14px 6px 6px;text-align:left}
+.mplane canvas{width:56px;height:56px;flex:none}
+.mp-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mp-t small{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--dim)}
+.mp-t b{font-size:19px;font-weight:800;line-height:1.1}
+.mp-t span{font-size:12px;color:var(--amber);font-weight:700}
+.mp-go{font-weight:800;font-size:14px;letter-spacing:.1em;color:var(--amber);white-space:nowrap}
+.planes{display:flex;flex-direction:column;gap:8px}
+.pc{display:grid;grid-template-columns:68px 1fr;gap:10px;align-items:center;border:2px solid var(--line);background:var(--steel);border-radius:12px;padding:8px;text-align:left}
+.pc canvas{width:68px;height:68px}
+.pc.on{border-color:var(--amber);background:#2a2412}
+.pc.locked{opacity:.6}
+.pc b{font-size:18px;font-weight:800;display:block;line-height:1.1}
+.pc p{margin:2px 0 0;font-size:13px;color:var(--dim);line-height:1.25}
+.pc p.lk{color:var(--amber);font-weight:700}
+.pips{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;font-size:12px;color:var(--dim);margin-top:5px;align-items:center}
+.pips i{display:flex;gap:3px}
+.pips u{width:12px;height:7px;border-radius:2px;background:rgba(255,255,255,.14);text-decoration:none}
+.pips u.f{background:var(--amber)}
+.lv.lock{opacity:.45}
+.lv.lock b{color:var(--dim)}
+.warn{color:var(--amber);font-weight:700}
+.unlock{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;border:2px solid var(--amber);border-radius:12px;padding:10px;background:#2a2412}
+.unlock canvas{width:64px;height:64px}
+.unlock b{font-size:20px;font-weight:800;display:block}
+.unlock p{margin:2px 0 0;font-size:13px;color:var(--dim)}
+#hearts.many svg{width:17px;height:17px}
 @media (max-height:620px){h1{font-size:44px}.how{gap:4px}.panel{gap:10px;padding:14px}}
 @media (max-height:760px){.keys{display:none}}
 @media (prefers-reduced-motion:reduce){.wpn{transition:none}}
@@ -147,8 +174,9 @@ h2{font-size:40px}
 
   <div class="screen" id="menu">
     <div class="panel">
-      <div class="eyebrow">F-35 · VÆLG BANE</div>
+      <div class="eyebrow">JAGERPILOT · 14 BANER</div>
       <h1>JAGERFLY</h1>
+      <button class="mplane" id="mplane" aria-label="Åbn hangaren og skift fly"><canvas id="mpC" width="112" height="112"></canvas><span class="mp-t"><small>DIT FLY</small><b id="mpName">F-16 Falcon</b><span id="mpNext"></span></span><span class="mp-go">HANGAR ›</span></button>
       <div class="levels" id="levels"></div>
       <p class="lvinfo" id="lvinfo"></p>
       <div class="how">
@@ -157,13 +185,22 @@ h2{font-size:40px}
         <div><b>Missil</b><span>Tryk på den gule knap. Missilerne finder selv målet.</span></div>
       </div>
       <div class="seg" id="diff">
-        <button data-d="easy" class="on"><b>Let</b><span>5 hjerter</span></button>
-        <button data-d="normal"><b>Normal</b><span>3 hjerter</span></button>
+        <button data-d="easy" class="on"><b>Let</b><span>+2 hjerter og missiler</span></button>
+        <button data-d="normal"><b>Normal</b><span>som flyet er</span></button>
       </div>
       <button class="go" id="start">START</button>
       <div class="row"><button id="fs1">Fuld skærm</button><button id="snd1">Lyd: til</button></div>
       <p class="keys">Tastatur: pile eller WASD flytter · mellemrum skyder · M eller Shift sender missiler · P pause · F fuld skærm</p>
       <div class="ver" id="ver">VERSION</div>
+    </div>
+  </div>
+
+  <div class="screen" id="hangar" hidden>
+    <div class="panel">
+      <div class="eyebrow">HANGAR</div>
+      <h2>Vælg dit fly</h2>
+      <div class="planes" id="planes"></div>
+      <button class="go" id="hangarOk">TILBAGE</button>
     </div>
   </div>
 
@@ -184,6 +221,7 @@ h2{font-size:40px}
       <p class="lead" id="endText"></p>
       <div class="big-score" id="endScore">0</div>
       <div class="stats"><div>Fjender<b id="endKills">0</b></div><div>Missiler<b id="endMs">0</b></div></div>
+      <div class="unlock" id="unlock" hidden><canvas id="unC" width="128" height="128"></canvas><div><div class="eyebrow">NYT FLY LÅST OP</div><b id="unName"></b><p id="unDesc"></p></div></div>
       <button class="go" id="next" hidden>NÆSTE BANE</button>
       <button class="go" id="again">SPIL IGEN</button>
       <div class="row"><button id="again2" hidden>Spil banen igen</button><button id="toMenu">Til menuen</button></div>
@@ -192,9 +230,9 @@ h2{font-size:40px}
 </div>
 
 <script>
-const VERSION='v1.2';
+const VERSION='v1.3';
 const $=s=>document.querySelector(s);
-const cv=$('#c'), ctx=cv.getContext('2d');
+const cv=$('#c'), mainCtx=cv.getContext('2d'); let ctx=mainCtx;
 $('#ver').textContent='VERSION '+VERSION.slice(1);
 document.title='Jagerfly '+VERSION;
 
@@ -212,8 +250,26 @@ addEventListener('resize',resize);
 resize();
 
 /* ---------- settings ---------- */
-const DIFF={easy:{hearts:5,eb:95,rate:1.45,boss:110,jetShoot:false,drop:.2,ms:8},
-            normal:{hearts:3,eb:130,rate:1,boss:170,jetShoot:true,drop:.12,ms:6}};
+const DIFF={easy:{extraH:2,extraMs:2,eb:95,rate:1.35,boss:110,jetShoot:false,drop:.2},
+            normal:{extraH:0,extraMs:0,eb:125,rate:1,boss:160,jetShoot:true,drop:.12}};
+// Five planes, each better than the last. unlock = level index that must be cleared first (-1 = from start).
+// half = right half of the top-down outline from nose to tail centre (mirrored when drawn). fl = [y, x-offset, twin engines]
+const PLANES=[
+  {name:'F-16 Falcon',desc:'Let og hurtigt. Dit første jagerfly.',col:'#a5afb8',dark:'#6d7882',hearts:3,mg:[2,.10],ms:4,msDmg:4,unlock:-1,
+   half:[[0,-26],[2.2,-18],[3.6,-8],[4.6,-2],[19,8],[19,11],[5,9],[5,13],[13,19],[13,22],[4,21],[3,23],[0,23]],tails:[[0,9,0,21]],canopy:[0,-15,2.6,6],fl:[23,0,false]},
+  {name:'F/A-18 Hornet',desc:'Hurtigere kanon og et hjerte mere.',col:'#909ba5',dark:'#5c6771',hearts:4,mg:[2,.08],ms:6,msDmg:4,unlock:2,
+   half:[[0,-26],[2.5,-17],[4,-10],[8,-2],[20,5],[20,10],[7,9],[7,12],[14,18],[14,21],[4.5,20],[4,23],[0,23]],tails:[[4.5,6,6.5,17],[-4.5,6,-6.5,17]],canopy:[0,-14,2.6,6],fl:[23,2.6,true]},
+  {name:'JAS 39 Gripen',desc:'Skyder tre skud på én gang.',col:'#808b95',dark:'#525d67',hearts:4,mg:[3,.08],ms:6,msDmg:5,unlock:5,
+   half:[[0,-26],[2.5,-18],[3.4,-13],[10,-8],[10,-6],[4,-6],[4.5,-2],[19,13],[19,15],[4,16],[3,22],[0,22]],tails:[[0,8,0,21]],canopy:[0,-15,2.5,6],fl:[22,0,false]},
+  {name:'F-35 Lightning II',desc:'Lynhurtig kanon og stærke missiler.',col:'#8a96a1',dark:'#5f6b76',hearts:5,mg:[3,.065],ms:8,msDmg:6,unlock:8,
+   half:[[0,-24],[2.6,-17],[4.6,-9],[6,-4],[21,7],[21,11],[8,10],[8,13],[15,19],[15,22],[4.5,21],[3.5,22],[0,22]],tails:[[5,9,7.5,17],[-5,9,-7.5,17]],canopy:[0,-11,2.8,6],fl:[21,0,false]},
+  {name:'F-22 Raptor',desc:'Det bedste fly. Fem skud i vifte.',col:'#6f7880',dark:'#454d55',hearts:6,mg:[5,.065],ms:10,msDmg:7,unlock:11,
+   half:[[0,-25],[3,-16],[5,-8],[7,-4],[21,7],[21,10],[9,11],[9,13],[17,18],[15,22],[5,21],[4,23],[0,23]],tails:[[5,8,8,16],[-5,8,-8,16]],canopy:[0,-13,2.7,6.5],fl:[23,2.8,true]},
+];
+let plane=0, PL=PLANES[0];
+const planeOpen=i=>PLANES[i].unlock<0||cleared.includes(PLANES[i].unlock);
+const levelOpen=i=>i===0||cleared.includes(i-1);
+const recPlane=i=>Math.min(PLANES.length-1,Math.floor(i/3));
 let diff='easy', D=DIFF.easy;
 const SPEED=55, T=40, COAST=2480, BOSS_T=95;
 const LEVELS=[
@@ -339,11 +395,15 @@ const sfx={
 function setMute(m){muted=m;['#snd1','#snd2'].forEach(s=>$(s).textContent='Lyd: '+(m?'fra':'til'))}
 
 /* ---------- game flow ---------- */
-function show(id){['#menu','#paused','#end'].forEach(s=>$(s).hidden=(s!==id));}
+function show(id){['#menu','#paused','#end','#hangar'].forEach(s=>$(s).hidden=(s!==id));}
 function reset(){
   L=LEVELS[lvl]; spd=SPEED; banner=3; $('#bossName').textContent=L.bossName; $('#bossbar').hidden=true;
-  D=Object.assign({},DIFF[diff]); D.rate*=1-Math.min(lvl,13)*.03; D.boss=Math.round(D.boss*(1+lvl*.08));
-  t=0; dist=0; score=0; kills=0; msFired=0; hearts=D.hearts; msLeft=D.ms; msCd=0;
+  PL=PLANES[plane];
+  D=Object.assign({},DIFF[diff]);
+  D.rate*=Math.max(.5,1-lvl*.035); D.eb*=1+lvl*.025; D.boss=Math.round(D.boss*(1+lvl*.22)); D.hpMul=1+lvl*.12;
+  if(lvl>=5)D.jetShoot=true;
+  D.hearts=PL.hearts+D.extraH;
+  t=0; dist=0; score=0; kills=0; msFired=0; hearts=D.hearts; msLeft=PL.ms+D.extraMs; msCd=0;
   Object.assign(P,{x:VW/2,y:Math.min(BOTTOM,VH-150),inv:1.5,fire:0,bank:0,dead:false});
   bullets=[];missiles=[];ebullets=[];enemies=[];parts=[];pops=[];pickups=[];
   waves=buildWaves(); wi=0; boss=null; shake=0; endTimer=0; endKind='';
@@ -356,10 +416,18 @@ function toMenu(){state='menu';show('#menu');$('#hud').hidden=true;$('#arms').hi
 function finish(kind){
   state='end'; firing=false; drag=null;
   const win=kind==='win', hasNext=win&&lvl<LEVELS.length-1;
+  const openBefore=PLANES.map((_,i)=>planeOpen(i));
   if(win&&!cleared.includes(lvl)){cleared.push(lvl);try{localStorage.setItem('jagerfly-cleared',JSON.stringify(cleared))}catch(_){};buildLevels()}
+  newPlane=PLANES.findIndex((_,i)=>planeOpen(i)&&!openBefore[i]);
+  $('#unlock').hidden=newPlane<0;
+  if(newPlane>=0){$('#unName').textContent=PLANES[newPlane].name;$('#unDesc').textContent=PLANES[newPlane].desc;thumb($('#unC'),newPlane,false)}
+  $('#next').textContent=newPlane>=0?'FLYV MED DET NYE FLY':'NÆSTE BANE';
   $('#endEye').textContent='BANE '+(lvl+1)+' · '+L.name.toUpperCase();
   $('#endTitle').textContent=win?(lvl===LEVELS.length-1?'Alle baner klaret!':'Bane klaret!'):'Flyet blev ramt';
-  $('#endText').textContent=win?('Du skød '+L.def+' ned. Flot flyvet, pilot!'):'Det var lige ved. Prøv igen, du kan godt!';
+  const rp=recPlane(lvl), better=PLANES.map((_,i)=>i).filter(i=>i>plane&&planeOpen(i)).pop();
+  $('#endText').textContent=win?('Du skød '+L.def+' ned. Flot flyvet, pilot!'):
+    (better!=null&&plane<rp?'Det var lige ved. Tip: tag '+PLANES[better].name+' fra hangaren – det er stærkere.':
+     'Det var lige ved. Prøv igen, du kan godt!');
   $('#next').hidden=!hasNext; $('#again').hidden=hasNext; $('#again2').hidden=!hasNext;
   $('#again').textContent=win?'SPIL IGEN':'PRØV IGEN';
   $('#endScore').textContent=score.toLocaleString('da-DK');
@@ -374,6 +442,7 @@ function spawn(w){
   if(w.type==='heli')Object.assign(e,{hp:4,r:16,pts:150,bx:w.x,ty:rnd(120,190),air:true,rot:0});
   if(w.type==='boat')Object.assign(e,{hp:5,r:15,pts:200,air:false});
   if(w.type==='tank')Object.assign(e,{hp:5,r:14,pts:200,air:false,aim:Math.PI/2});
+  if(w.type!=='boss'&&w.type!=='heart')e.hp=Math.ceil(e.hp*D.hpMul);
   if(w.type==='boss'){
     const k=L.boss;
     Object.assign(e,{kind:k,hp:D.boss,max:D.boss,r:40,pts:3000+lvl*1000,air:k==='bomber'||k==='twinheli'||k==='megabomber',y:k==='ship'||k==='carrier'?-130:-90,phase:0,rot:0,launch:3,
@@ -463,13 +532,38 @@ document.querySelectorAll('#diff button').forEach(b=>b.addEventListener('click',
 try{const s=localStorage.getItem('jagerfly-diff');if(s&&DIFF[s]){diff=s;document.querySelectorAll('#diff button').forEach(x=>x.classList.toggle('on',x.dataset.d===s))}}catch(_){}
 function buildLevels(){
   if(state==='menu')L=LEVELS[lvl];
-  $('#levels').innerHTML=LEVELS.map((l,i)=>`<button class="lv${i===lvl?' on':''}" data-l="${i}"><i style="background:${l.sw}"></i><b>${i+1} ${l.name}${cleared.includes(i)?' <em>★</em>':''}</b></button>`).join('');
-  $('#lvinfo').innerHTML=`<b>Bane ${lvl+1}: ${LEVELS[lvl].name}</b> · ${LEVELS[lvl].sub} · boss: ${LEVELS[lvl].def}`;
-  $('#levels').querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{lvl=+b.dataset.l;try{localStorage.setItem('jagerfly-lvl',lvl)}catch(_){};buildLevels()}));
+  if(!levelOpen(lvl))lvl=0;
+  $('#levels').innerHTML=LEVELS.map((l,i)=>`<button class="lv${i===lvl?' on':''}${levelOpen(i)?'':' lock'}" data-l="${i}"><i style="background:${l.sw}"></i><b>${i+1} ${levelOpen(i)?l.name:'Låst'}${cleared.includes(i)?' <em>★</em>':''}</b></button>`).join('');
+  const rp=recPlane(lvl);
+  $('#lvinfo').innerHTML=`<b>Bane ${lvl+1}: ${LEVELS[lvl].name}</b> · ${LEVELS[lvl].sub} · boss: ${LEVELS[lvl].def}`+
+    (plane<rp?`<br><span class="warn">Svær bane! Anbefalet fly: ${PLANES[rp].name}${planeOpen(rp)?' – vælg det i hangaren':''}</span>`:'');
+  $('.how').hidden=cleared.length>0;
+  buildPlaneButton();
+  $('#levels').querySelectorAll('.lv').forEach(b=>b.addEventListener('click',()=>{
+    if(!levelOpen(+b.dataset.l)){$('#lvinfo').innerHTML=`<span class="warn">Bane ${+b.dataset.l+1} er låst. Klar bane ${+b.dataset.l} først.</span>`;return}
+    lvl=+b.dataset.l;try{localStorage.setItem('jagerfly-lvl',lvl)}catch(_){};buildLevels()}));
 }
 try{const s=+localStorage.getItem('jagerfly-lvl');if(s>=0&&s<LEVELS.length)lvl=s}catch(_){}
+try{const s=+localStorage.getItem('jagerfly-plane');if(s>=0&&s<PLANES.length&&planeOpen(s))plane=s}catch(_){}
+function nextLocked(){for(let i=0;i<PLANES.length;i++)if(!planeOpen(i))return i;return -1}
+function buildPlaneButton(){
+  $('#mpName').textContent=PLANES[plane].name; thumb($('#mpC'),plane,false);
+  const n=nextLocked(); $('#mpNext').textContent=n<0?'Alle fly låst op':`Næste fly: klar bane ${PLANES[n].unlock+1}`;
+}
+function pips(v,max){let h='';for(let i=0;i<max;i++)h+=`<u class="${i<v?'f':''}"></u>`;return h}
+function buildHangar(){
+  $('#planes').innerHTML=PLANES.map((q,i)=>{const open=planeOpen(i);
+    return `<button class="pc${i===plane?' on':''}${open?'':' locked'}" data-p="${i}"><canvas width="136" height="136"></canvas><span><b>${q.name}</b>`+
+      (open?`<p>${q.desc}</p>`:`<p class="lk">Klar bane ${q.unlock+1} for at låse op</p>`)+
+      `<span class="pips">Kanon<i>${pips(i+1,5)}</i>Missiler<i>${pips(q.ms/2,5)}</i>Hjerter<i>${pips(q.hearts-1,5)}</i></span></span></button>`}).join('');
+  $('#planes').querySelectorAll('.pc').forEach(b=>{const i=+b.dataset.p;thumb(b.querySelector('canvas'),i,!planeOpen(i));
+    b.addEventListener('click',()=>{if(!planeOpen(i))return;plane=i;try{localStorage.setItem('jagerfly-plane',plane)}catch(_){};buildHangar()})});
+}
+$('#mplane').onclick=()=>{buildHangar();show('#hangar')};
+$('#hangarOk').onclick=()=>{show('#menu');buildLevels()};
 buildLevels();
-$('#next').onclick=()=>{lvl=Math.min(LEVELS.length-1,lvl+1);try{localStorage.setItem('jagerfly-lvl',lvl)}catch(_){};buildLevels();startGame()};
+let newPlane=-1;
+$('#next').onclick=()=>{if(newPlane>=0){plane=newPlane;try{localStorage.setItem('jagerfly-plane',plane)}catch(_){}}lvl=Math.min(LEVELS.length-1,lvl+1);try{localStorage.setItem('jagerfly-lvl',lvl)}catch(_){};buildLevels();startGame()};
 $('#again2').onclick=startGame;
 $('#start').onclick=startGame; $('#again').onclick=startGame;
 $('#pause').onclick=pauseGame; $('#resume').onclick=resumeGame;
@@ -479,7 +573,7 @@ $('#quit').onclick=toMenu; $('#toMenu').onclick=toMenu;
 
 /* ---------- HUD ---------- */
 const HEART='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.7 8 3 4 6.9 4c2.1 0 3.6 1.1 5.1 3 1.5-1.9 3-3 5.1-3C21 4 23.3 8 21.6 11.8 19.5 16.4 12 21 12 21z" fill="FILL" stroke="#fff" stroke-opacity=".7" stroke-width="1.2"/></svg>';
-function drawHearts(){let h='';for(let i=0;i<D.hearts;i++)h+=HEART.replace('FILL',i<hearts?'#ff5466':'rgba(0,0,0,.45)');$('#hearts').innerHTML=h}
+function drawHearts(){$('#hearts').classList.toggle('many',D.hearts>5);let h='';for(let i=0;i<D.hearts;i++)h+=HEART.replace('FILL',i<hearts?'#ff5466':'rgba(0,0,0,.45)');$('#hearts').innerHTML=h}
 const hudCache={score:-1,prog:-1,boss:-1};
 function updHud(){
   if(score!==hudCache.score){hudCache.score=score;$('#score').textContent=score.toLocaleString('da-DK')}
@@ -511,16 +605,19 @@ function update(dt){
   // firing
   P.fire-=dt; msCd=Math.max(0,msCd-dt);
   if(firing&&!P.dead&&P.fire<=0){
-    P.fire=.085;bullets.push({x:P.x-7,y:P.y-12},{x:P.x+7,y:P.y-12});sfx.mg();
+    P.fire=PL.mg[1];
+    const n=PL.mg[0], pat=n===2?[[-7,0],[7,0]]:n===3?[[0,0],[-7,-45],[7,45]]:[[0,0],[-6,-35],[6,35],[-12,-100],[12,100]];
+    for(const [ox,vx] of pat)bullets.push({x:P.x+ox,y:P.y-12,vx});
+    sfx.mg();
   }
 
   // waves
   while(wi<waves.length&&waves[wi].t<=t)spawn(waves[wi++]);
 
   // player shots
-  for(const b of bullets){b.y-=560*dt}
+  for(const b of bullets){b.y-=560*dt;b.x+=(b.vx||0)*dt}
   bullets=bullets.filter(b=>{
-    if(b.y<-20)return false;
+    if(b.y<-20||b.x<-30||b.x>VW+30)return false;
     for(const e of enemies){if(e.dead)continue;if(hitE(e,b.x,b.y,3)){damage(e,1);parts.push({x:b.x,y:b.y,vx:0,vy:SPEED,life:.12,max:.12,sz:4,c:'#fff3c4'});return false}}
     return true;
   });
@@ -535,7 +632,7 @@ function update(dt){
   }
   missiles=missiles.filter(m=>{
     if(m.y<-40||m.y>VH+40||m.x<-40||m.x>VW+40||m.age>4)return false;
-    for(const e of enemies){if(e.dead)continue;if(hitE(e,m.x,m.y,5)){damage(e,4);explode(m.x,m.y,.7);return false}}
+    for(const e of enemies){if(e.dead)continue;if(hitE(e,m.x,m.y,5)){damage(e,PL.msDmg);explode(m.x,m.y,.7);return false}}
     return true;
   });
 
@@ -830,6 +927,35 @@ function cityLights(x0,x1,y0,y1){
 function blob(x,y,r,seed){ctx.beginPath();for(let i=0;i<=16;i++){const a=i/16*6.283,rr=r*(.84+.22*hash(seed,i%16));const px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr*.85;i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fill()}
 function circ(x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,6.283);ctx.fill()}
 
+function drawPlane(pi,x,y,s,bank,flash,shadow){
+  const Q=PLANES[pi];
+  ctx.save(); ctx.translate(x,y); ctx.scale(s*(1-Math.abs(bank)*.12),s);
+  const body=shadow?'rgba(0,0,0,.28)':flash?'#ffffff':Q.col;
+  if(!shadow){
+    const [fy,fx,twin]=Q.fl;
+    for(const ox of twin?[-fx,fx]:[0]){const f=6+Math.random()*6;
+      ctx.fillStyle='#ffb02e';ctx.beginPath();ctx.moveTo(ox-3,fy-1);ctx.lineTo(ox,fy+f+5);ctx.lineTo(ox+3,fy-1);ctx.fill();
+      ctx.fillStyle='#fff5c8';ctx.beginPath();ctx.moveTo(ox-1.7,fy-1);ctx.lineTo(ox,fy+f);ctx.lineTo(ox+1.7,fy-1);ctx.fill()}
+  }
+  const full=Q.half.concat(Q.half.slice(1,-1).reverse().map(([a,b])=>[-a,b]));
+  ctx.fillStyle=body; ctx.strokeStyle='#3f4952'; ctx.lineWidth=.8;
+  ctx.beginPath(); full.forEach(([a,b],i)=>i?ctx.lineTo(a,b):ctx.moveTo(a,b)); ctx.closePath(); ctx.fill();
+  if(shadow){ctx.restore();return}
+  ctx.stroke();
+  ctx.fillStyle=Q.dark; ctx.fillRect(-1,-4,2,22);
+  ctx.strokeStyle=Q.dark; ctx.lineWidth=2.2; ctx.beginPath(); for(const [a,b,c,d] of Q.tails){ctx.moveTo(a,b);ctx.lineTo(c,d)} ctx.stroke();
+  const [cx,cy,cw,ch]=Q.canopy;
+  ctx.fillStyle='#3a2f12'; ctx.beginPath(); ctx.ellipse(cx,cy,cw,ch,0,0,6.283); ctx.fill();
+  ctx.fillStyle='#d8ad4c'; ctx.beginPath(); ctx.ellipse(cx-.6,cy-1,cw*.5,ch*.6,0,0,6.283); ctx.fill();
+  ctx.restore();
+}
+function thumb(cvs,pi,locked){
+  const c=cvs.getContext('2d'); c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,cvs.width,cvs.height);
+  const k=cvs.width/64; c.setTransform(k,0,0,k,0,0);
+  c.fillStyle='#1f6a96'; c.beginPath(); c.arc(32,32,30,0,6.283); c.fill();
+  const prev=ctx; ctx=c; try{c.globalAlpha=locked?.35:1;drawPlane(pi,32,31,1,0,false,false)}finally{ctx=prev;c.globalAlpha=1}
+  if(locked){c.fillStyle='#eef3f7';c.fillRect(25,30,14,11);c.strokeStyle='#eef3f7';c.lineWidth=2.4;c.beginPath();c.arc(32,30,5,Math.PI,0);c.stroke()}
+}
 function f35(x,y,s,bank,flash,shadow){
   ctx.save(); ctx.translate(x,y); ctx.scale(s*(1-Math.abs(bank)*.12),s);
   const body=shadow?'rgba(0,0,0,.28)':flash?'#ffffff':'#8a96a1', dark=shadow?'rgba(0,0,0,0)':'#5f6b76', edge=shadow?'rgba(0,0,0,0)':'#3f4952';
@@ -997,17 +1123,17 @@ function render(){
   for(const e of enemies){if(e.type==='boat')boat(e);else if(e.type==='tank')tank(e);else if(e.type==='boss'&&!e.air)drawBoss(e,false)}
   // shadows of air units
   for(const e of enemies){if(!e.air)continue;const s={...e,x:e.x+12,y:e.y+16};if(e.type==='jet')enemyJet(s,true);else if(e.type==='heli')heli(s,true);else if(e.type==='boss')drawBoss({...e,x:e.x+22,y:e.y+30},true)}
-  if(!P.dead)f35(P.x+14,P.y+20,1,P.bank,false,true);
+  if(!P.dead)drawPlane(plane,P.x+14,P.y+20,1,P.bank,false,true);
   for(const p of pickups)(p.k==='m'?msIcon:heartIcon)(p.x,p.y,1+Math.sin(p.age*6)*.08);
   // smoke under air
   for(const p of parts){if(p.smoke){ctx.globalAlpha=Math.max(0,p.life/p.max)*.55;ctx.fillStyle=p.c;circ(p.x,p.y,p.sz*(1.6-p.life/p.max*.6))}}
   ctx.globalAlpha=1;
   for(const e of enemies){if(e.type==='jet')enemyJet(e);else if(e.type==='heli')heli(e);else if(e.type==='boss'&&e.air)drawBoss(e,false)}
   // player shots
-  ctx.fillStyle='#fff1a8'; for(const b of bullets){ctx.fillRect(b.x-1.3,b.y-6,2.6,12)}
+  ctx.fillStyle='#fff1a8'; for(const b of bullets){ctx.save();ctx.translate(b.x,b.y);ctx.rotate(Math.atan2(b.vx||0,560));ctx.fillRect(-1.3,-6,2.6,12);ctx.restore()}
   for(const m of missiles){ctx.save();ctx.translate(m.x,m.y);ctx.rotate(Math.atan2(m.vy,m.vx)+Math.PI/2);ctx.fillStyle='#eef1f3';ctx.fillRect(-2,-8,4,14);ctx.fillStyle='#d23a2a';ctx.fillRect(-2,-9,4,3);ctx.fillStyle='#9aa3ab';ctx.fillRect(-4.5,3,9,2.5);ctx.fillStyle='#ffb02e';ctx.fillRect(-1.5,6,3,4+Math.random()*4);ctx.restore()}
   // player
-  if(!P.dead&&!(P.inv>0&&Math.floor(P.inv*12)%2&&state==='play'))f35(P.x,P.y,1,P.bank,false,false);
+  if(!P.dead&&!(P.inv>0&&Math.floor(P.inv*12)%2&&state==='play'))drawPlane(plane,P.x,P.y,1,P.bank,false,false);
   // enemy bullets
   for(const b of ebullets){ctx.fillStyle='rgba(255,120,30,.35)';circ(b.x,b.y,8);ctx.fillStyle='#ff8a1f';circ(b.x,b.y,5);ctx.fillStyle='#fff3c4';circ(b.x,b.y,2.2)}
   // fire particles
